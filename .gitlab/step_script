@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+
+runner_script_trap() {
+        exit_code=$?
+        out_json="{\"command_exit_code\": $exit_code, \"script\": \"$0\"}"
+
+        echo ""
+        echo "$out_json"
+        exit 0
+}
+
+trap runner_script_trap EXIT
+if set -o | grep pipefail > /dev/null; then set -o pipefail; fi; set -o errexit
+set +o noclobber
+: | eval $'export FF_CMD_DISABLE_DELAYED_ERROR_LEVEL_EXPANSION=$\'false\'
+export FF_NETWORK_PER_BUILD=$\'false\'
+export FF_USE_LEGACY_KUBERNETES_EXECUTION_STRATEGY=$\'false\'
+export FF_USE_DIRECT_DOWNLOAD=$\'true\'
+export FF_SKIP_NOOP_BUILD_STAGES=$\'true\'
+export FF_USE_FASTZIP=$\'false\'
+export FF_DISABLE_UMASK_FOR_DOCKER_EXECUTOR=$\'false\'
+export FF_ENABLE_BASH_EXIT_CODE_CHECK=$\'false\'
+export FF_USE_WINDOWS_LEGACY_PROCESS_STRATEGY=$\'true\'
+export FF_USE_NEW_BASH_EVAL_STRATEGY=$\'false\'
+export FF_USE_POWERSHELL_PATH_RESOLVER=$\'false\'
+export FF_USE_DYNAMIC_TRACE_FORCE_SEND_INTERVAL=$\'false\'
+export FF_SCRIPT_SECTIONS=$\'false\'
+export FF_USE_NEW_SHELL_ESCAPE=$\'false\'
+export FF_ENABLE_JOB_CLEANUP=$\'false\'
+export FF_KUBERNETES_HONOR_ENTRYPOINT=$\'false\'
+export FF_POSIXLY_CORRECT_ESCAPES=$\'false\'
+export FF_USE_IMPROVED_URL_MASKING=$\'false\'
+export CI_JOB_IMAGE=$\'golang:latest\'
+export CI_RUNNER_SHORT_TOKEN=$\'iJALnHAM\'
+export CI_BUILDS_DIR=$\'/builds\'
+export CI_PROJECT_DIR=$\'/builds/testifysec/spire\'
+export CI_CONCURRENT_ID=0
+export CI_CONCURRENT_PROJECT_ID=0
+export CI_SERVER=$\'yes\'
+export CI_JOB_STATUS=$\'running\'
+mkdir -p "/builds/testifysec/spire.tmp"
+printf \'%s\' $\'-----BEGIN CERTIFICATE-----\
+MIIFgzCCBSqgAwIBAgIQAzvszaMWMDGLGsqZXiy+DDAKBggqhkjOPQQDAjBKMQsw\
+CQYDVQQGEwJVUzEZMBcGA1UEChMQQ2xvdWRmbGFyZSwgSW5jLjEgMB4GA1UEAxMX\
+Q2xvdWRmbGFyZSBJbmMgRUNDIENBLTMwHhcNMjIwNTA2MDAwMDAwWhcNMjIwODAz\
+MjM1OTU5WjBqMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQG\
+A1UEBxMNU2FuIEZyYW5jaXNjbzEZMBcGA1UEChMQQ2xvdWRmbGFyZSwgSW5jLjET\
+MBEGA1UEAxMKZ2l0bGFiLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFMm\
+hkuDO2deCGwtoVd4YLVIxirhosYMDFvAAjU54HjJVKGBIeMGurL0FcM+l3tCSSps\
+3OmaA868wXzKV8QEiTWjggPQMIIDzDAfBgNVHSMEGDAWgBSlzjfq67B1DpRniLRF\
++tkkEIeWHzAdBgNVHQ4EFgQUGk7QpqOqWxfELHjXrkdsqru6AJAwgZQGA1UdEQSB\
+jDCBiYIKZ2l0bGFiLmNvbYIUY3VzdG9tZXJzLmdpdGxhYi5jb22CGmVtYWlsLmN1\
+c3RvbWVycy5naXRsYWIuY29tgg9jaGVmLmdpdGxhYi5jb22CE3JlZ2lzdHJ5Lmdp\
+dGxhYi5jb22CDmthcy5naXRsYWIuY29tghNwYWNrYWdlcy5naXRsYWIuY29tMA4G\
+A1UdDwEB/wQEAwIHgDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwewYD\
+VR0fBHQwcjA3oDWgM4YxaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0Nsb3VkZmxh\
+cmVJbmNFQ0NDQS0zLmNybDA3oDWgM4YxaHR0cDovL2NybDQuZGlnaWNlcnQuY29t\
+L0Nsb3VkZmxhcmVJbmNFQ0NDQS0zLmNybDA+BgNVHSAENzA1MDMGBmeBDAECAjAp\
+MCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwdgYIKwYB\
+BQUHAQEEajBoMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdpY2VydC5jb20w\
+QAYIKwYBBQUHMAKGNGh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0LmNvbS9DbG91ZGZs\
+YXJlSW5jRUNDQ0EtMy5jcnQwDAYDVR0TAQH/BAIwADCCAX8GCisGAQQB1nkCBAIE\
+ggFvBIIBawFpAHcAKXm+8J45OSHwVnOfY6V35b5XfZxgCvj5TV0mXCVdx4QAAAGA\
+mfyKbAAABAMASDBGAiEArC/w/vVJusKdRtN5Fd6qWjlK441oFCUH/RZLMRESN9gC\
+IQCoDTEe60/UXp8shwJN4peKYgv7uqOi7KO89QHZyGrHOQB2AFGjsPX9AXmcVm24\
+N3iPDKR6zBsny/eeiEKaDf7UiwXlAAABgJn8ihUAAAQDAEcwRQIgPZP4Uygvh2O9\
+lzJGRqAQUY6LcWsOXI2gaJeboAyFlJICIQCYhtmhNtU+MHcGfjmNhz5MUlbTZ79V\
+Rhj5qD0qSrx+IgB2AEHIyrHfIkZKEMahOglCh15OMYsbA+vrS8do8JBilgb2AAAB\
+gJn8ic0AAAQDAEcwRQIhAPOdR4+UIm+AkVVceCzR/BWDqp6m4ooTlgKO5nOu//yK\
+AiBrE0l8HWcveYWwLP68m6EWl3UdMQylulbzRbdsPZeuMzAKBggqhkjOPQQDAgNH\
+ADBEAiAxx/OVRp19rExWmzFskO0NDfmYDIPpSQ4XgIQKsllJhgIgTVuSUWZOlfTO\
+o11zwvKS7zWZ+yUxvlxrAEWVsKlG6LA=\
+-----END CERTIFICATE-----\
+-----BEGIN CERTIFICATE-----\
+MIIDzTCCArWgAwIBAgIQCjeHZF5ftIwiTv0b7RQMPDANBgkqhkiG9w0BAQsFADBa\
+MQswCQYDVQQGEwJJRTESMBAGA1UEChMJQmFsdGltb3JlMRMwEQYDVQQLEwpDeWJl\
+clRydXN0MSIwIAYDVQQDExlCYWx0aW1vcmUgQ3liZXJUcnVzdCBSb290MB4XDTIw\
+MDEyNzEyNDgwOFoXDTI0MTIzMTIzNTk1OVowSjELMAkGA1UEBhMCVVMxGTAXBgNV\
+BAoTEENsb3VkZmxhcmUsIEluYy4xIDAeBgNVBAMTF0Nsb3VkZmxhcmUgSW5jIEVD\
+QyBDQS0zMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEua1NZpkUC0bsH4HRKlAe\
+nQMVLzQSfS2WuIg4m4Vfj7+7Te9hRsTJc9QkT+DuHM5ss1FxL2ruTAUJd9NyYqSb\
+16OCAWgwggFkMB0GA1UdDgQWBBSlzjfq67B1DpRniLRF+tkkEIeWHzAfBgNVHSME\
+GDAWgBTlnVkwgkdYzKz6CFQ2hns6tQRN8DAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l\
+BBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMBIGA1UdEwEB/wQIMAYBAf8CAQAwNAYI\
+KwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdpY2VydC5j\
+b20wOgYDVR0fBDMwMTAvoC2gK4YpaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL09t\bmlyb290MjAyNS5jcmwwbQYDVR0gBGYwZDA3BglghkgBhv1sAQEwKjAoBggrBgEF\BQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzALBglghkgBhv1sAQIw\CAYGZ4EMAQIBMAgGBmeBDAECAjAIBgZngQwBAgMwDQYJKoZIhvcNAQELBQADggEB\AAUkHd0bsCrrmNaF4zlNXmtXnYJX/OvoMaJXkGUFvhZEOFp3ArnPEELG4ZKk40Un\+ABHLGioVplTVI+tnkDB0A+21w0LOEhsUCxJkAZbZB2LzEgwLt4I4ptJIsCSDBFe\
+lpKU1fwg3FZs5ZKTv3ocwDfjhUkV+ivhdDkYD7fa86JXWGBPzI6UAPxGezQxPk1H\
+goE6y/SJXQ7vTQ1unBuCJN0yJV0ReFEQPaA1IwQvZW+cwdFD19Ae8zFnWSfda9J1\
+CZMRJCQUzym+5iPDuI9yP+kHyCREU3qzuWFloUwOxkgAyXVjBYdwRVKD05WdRerw\
+6DEdfgkfCv4+3ao8XnTSrLE=\
+-----END CERTIFICATE-----\
+-----BEGIN CERTIFICATE-----\
+MIIDdzCCAl+gAwIBAgIEAgAAuTANBgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJJ\
+RTESMBAGA1UEChMJQmFsdGltb3JlMRMwEQYDVQQLEwpDeWJlclRydXN0MSIwIAYD\
+VQQDExlCYWx0aW1vcmUgQ3liZXJUcnVzdCBSb290MB4XDTAwMDUxMjE4NDYwMFoX\
+DTI1MDUxMjIzNTkwMFowWjELMAkGA1UEBhMCSUUxEjAQBgNVBAoTCUJhbHRpbW9y\
+ZTETMBEGA1UECxMKQ3liZXJUcnVzdDEiMCAGA1UEAxMZQmFsdGltb3JlIEN5YmVy\
+VHJ1c3QgUm9vdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKMEuyKr\
+mD1X6CZymrV51Cni4eiVgLGw41uOKymaZN+hXe2wCQVt2yguzmKiYv60iNoS6zjr\
+IZ3AQSsBUnuId9Mcj8e6uYi1agnnc+gRQKfRzMpijS3ljwumUNKoUMMo6vWrJYeK\
+mpYcqWe4PwzV9/lSEy/CG9VwcPCPwBLKBsua4dnKM3p31vjsufFoREJIE9LAwqSu\
+XmD+tqYF/LTdB1kC1FkYmGP1pWPgkAx9XbIGevOF6uvUA65ehD5f/xXtabz5OTZy\
+dc93Uk3zyZAsuT3lySNTPx8kmCFcB5kpvcY67Oduhjprl3RjM71oGDHweI12v/ye\
+jl0qhqdNkNwnGjkCAwEAAaNFMEMwHQYDVR0OBBYEFOWdWTCCR1jMrPoIVDaGezq1\
+BE3wMBIGA1UdEwEB/wQIMAYBAf8CAQMwDgYDVR0PAQH/BAQDAgEGMA0GCSqGSIb3\
+DQEBBQUAA4IBAQCFDF2O5G9RaEIFoN27TyclhAO992T9Ldcw46QQF+vaKSm2eT92\
+9hkTI7gQCvlYpNRhcL0EYWoSihfVCr3FvDB81ukMJY2GQE/szKN+OMY3EU/t3Wgx\
+jkzSswF07r51XgdIGn9w/xZchMB5hbgF/X++ZRGjD8ACtPhSNzkE1akxehi/oCr0\
+Epn3o0WC4zxe9Z2etciefC7IpJ5OCBRLbf1wbWsaY71k5h+3zvDyny67G7fyUIhz\
+ksLi4xaNmjICq44Y3ekQEe5+NauQrz4wlHrQMz2nZQ/1/I6eYs9HRCwBXbsdtTLS\
+R9I4LtD+gdwyah617jzV/OeBHRnDJELqYzmp\
+-----END CERTIFICATE-----\' > "/builds/testifysec/spire.tmp/CI_SERVER_TLS_CA_FILE"
+export CI_SERVER_TLS_CA_FILE="/builds/testifysec/spire.tmp/CI_SERVER_TLS_CA_FILE"
+export CI_PIPELINE_ID=541535913
+export CI_PIPELINE_URL=$\'https://gitlab.com/testifysec/spire/-/pipelines/541535913\'
+export CI_JOB_ID=2470296894
+export CI_JOB_URL=$\'https://gitlab.com/testifysec/spire/-/jobs/2470296894\'
+export CI_JOB_TOKEN=$\'tJFN5_QsPQbnCHTq4Bmx\'
+export CI_JOB_STARTED_AT=$\'2022-05-17T22:23:59Z\'
+export CI_BUILD_ID=2470296894
+export CI_BUILD_TOKEN=$\'tJFN5_QsPQbnCHTq4Bmx\'
+export CI_REGISTRY_USER=$\'gitlab-ci-token\'
+export CI_REGISTRY_PASSWORD=$\'tJFN5_QsPQbnCHTq4Bmx\'
+export CI_REPOSITORY_URL=$\'https://gitlab-ci-token:tJFN5_QsPQbnCHTq4Bmx@gitlab.com/testifysec/spire.git\'
+export CI_DEPENDENCY_PROXY_USER=$\'gitlab-ci-token\'
+export CI_DEPENDENCY_PROXY_PASSWORD=$\'tJFN5_QsPQbnCHTq4Bmx\'
+export CI_JOB_JWT=$\'eyJhbGciOiJSUzI1NiIsImtpZCI6IjRpM3NGRTdzeHFOUE9UN0ZkdmNHQTFaVkdHSV9yLXRzRFhuRXVZVDRacUUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lc3BhY2VfaWQiOiIxMjc3MTQ3MiIsIm5hbWVzcGFjZV9wYXRoIjoidGVzdGlmeXNlYyIsInByb2plY3RfaWQiOiIzMTU4NTEzMiIsInByb2plY3RfcGF0aCI6InRlc3RpZnlzZWMvc3BpcmUiLCJ1c2VyX2lkIjoiOTM0NzQ2OSIsInVzZXJfbG9naW4iOiJ0ZXN0aWZ5c2VjLWNvbGUiLCJ1c2VyX2VtYWlsIjoiY29sZUBhcGV4ZGVmZW5zZXNvbHV0aW9ucy5jb20iLCJwaXBlbGluZV9pZCI6IjU0MTUzNTkxMyIsInBpcGVsaW5lX3NvdXJjZSI6InB1c2giLCJqb2JfaWQiOiIyNDcwMjk2ODk0IiwicmVmIjoicnVubmVyLWludGVncmF0aW9uIiwicmVmX3R5cGUiOiJicmFuY2giLCJyZWZfcHJvdGVjdGVkIjoiZmFsc2UiLCJqdGkiOiJiNTM3YWRkMC00OWRjLTQzMWUtYWUzNS1jYzFlMTY2ZWUzNjAiLCJpc3MiOiJnaXRsYWIuY29tIiwiaWF0IjoxNjUyODI2MjM5LCJuYmYiOjE2NTI4MjYyMzQsImV4cCI6MTY1MjgyOTgzOSwic3ViIjoiam9iXzI0NzAyOTY4OTQifQ.vkzmDX154ihGJujFW0PFuSgfYLkQwoehHn5d89MwPmGmXLKFUETA_5XczCCpXKOBXE2FkgOSv7HQZ7V1gWhtrz_NQZNqdB8dVpZ_aDAbbZWYM4SUBnVkB8yy_iqs3HEMbxHH_f1GTn0rpHIaCVJesrTdV-txtktTeU9fOsNY_jHb0Gc0sOJstNZwRsZem38IrIXKVO-Pjpq7DA93yOx8zLWoqcXywb3oGfFzWZqxORv_8BDAepNIUEoq6Dcw9infJ0TkbL7uG7cBZYtx2vGc15CQkJZDUnaRmaSFtPS9lCtYUr1fbUJHNzQTB7yrA88ybKxsn3X1XLlfncTPZhlrxQ\'
+export CI_JOB_JWT_V1=$\'eyJhbGciOiJSUzI1NiIsImtpZCI6IjRpM3NGRTdzeHFOUE9UN0ZkdmNHQTFaVkdHSV9yLXRzRFhuRXVZVDRacUUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lc3BhY2VfaWQiOiIxMjc3MTQ3MiIsIm5hbWVzcGFjZV9wYXRoIjoidGVzdGlmeXNlYyIsInByb2plY3RfaWQiOiIzMTU4NTEzMiIsInByb2plY3RfcGF0aCI6InRlc3RpZnlzZWMvc3BpcmUiLCJ1c2VyX2lkIjoiOTM0NzQ2OSIsInVzZXJfbG9naW4iOiJ0ZXN0aWZ5c2VjLWNvbGUiLCJ1c2VyX2VtYWlsIjoiY29sZUBhcGV4ZGVmZW5zZXNvbHV0aW9ucy5jb20iLCJwaXBlbGluZV9pZCI6IjU0MTUzNTkxMyIsInBpcGVsaW5lX3NvdXJjZSI6InB1c2giLCJqb2JfaWQiOiIyNDcwMjk2ODk0IiwicmVmIjoicnVubmVyLWludGVncmF0aW9uIiwicmVmX3R5cGUiOiJicmFuY2giLCJyZWZfcHJvdGVjdGVkIjoiZmFsc2UiLCJqdGkiOiJiNTM3YWRkMC00OWRjLTQzMWUtYWUzNS1jYzFlMTY2ZWUzNjAiLCJpc3MiOiJnaXRsYWIuY29tIiwiaWF0IjoxNjUyODI2MjM5LCJuYmYiOjE2NTI4MjYyMzQsImV4cCI6MTY1MjgyOTgzOSwic3ViIjoiam9iXzI0NzAyOTY4OTQifQ.vkzmDX154ihGJujFW0PFuSgfYLkQwoehHn5d89MwPmGmXLKFUETA_5XczCCpXKOBXE2FkgOSv7HQZ7V1gWhtrz_NQZNqdB8dVpZ_aDAbbZWYM4SUBnVkB8yy_iqs3HEMbxHH_f1GTn0rpHIaCVJesrTdV-txtktTeU9fOsNY_jHb0Gc0sOJstNZwRsZem38IrIXKVO-Pjpq7DA93yOx8zLWoqcXywb3oGfFzWZqxORv_8BDAepNIUEoq6Dcw9infJ0TkbL7uG7cBZYtx2vGc15CQkJZDUnaRmaSFtPS9lCtYUr1fbUJHNzQTB7yrA88ybKxsn3X1XLlfncTPZhlrxQ\'
+export CI_JOB_JWT_V2=$\'eyJhbGciOiJSUzI1NiIsImtpZCI6IjRpM3NGRTdzeHFOUE9UN0ZkdmNHQTFaVkdHSV9yLXRzRFhuRXVZVDRacUUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lc3BhY2VfaWQiOiIxMjc3MTQ3MiIsIm5hbWVzcGFjZV9wYXRoIjoidGVzdGlmeXNlYyIsInByb2plY3RfaWQiOiIzMTU4NTEzMiIsInByb2plY3RfcGF0aCI6InRlc3RpZnlzZWMvc3BpcmUiLCJ1c2VyX2lkIjoiOTM0NzQ2OSIsInVzZXJfbG9naW4iOiJ0ZXN0aWZ5c2VjLWNvbGUiLCJ1c2VyX2VtYWlsIjoiY29sZUBhcGV4ZGVmZW5zZXNvbHV0aW9ucy5jb20iLCJwaXBlbGluZV9pZCI6IjU0MTUzNTkxMyIsInBpcGVsaW5lX3NvdXJjZSI6InB1c2giLCJqb2JfaWQiOiIyNDcwMjk2ODk0IiwicmVmIjoicnVubmVyLWludGVncmF0aW9uIiwicmVmX3R5cGUiOiJicmFuY2giLCJyZWZfcHJvdGVjdGVkIjoiZmFsc2UiLCJqdGkiOiIxYTU2MzJjNS0zNzVkLTRhZWMtYTBjMy0wMjIxZTQwNjI1MmYiLCJpc3MiOiJodHRwczovL2dpdGxhYi5jb20iLCJpYXQiOjE2NTI4MjYyMzksIm5iZiI6MTY1MjgyNjIzNCwiZXhwIjoxNjUyODI5ODM5LCJzdWIiOiJwcm9qZWN0X3BhdGg6dGVzdGlmeXNlYy9zcGlyZTpyZWZfdHlwZTpicmFuY2g6cmVmOnJ1bm5lci1pbnRlZ3JhdGlvbiIsImF1ZCI6Imh0dHBzOi8vZ2l0bGFiLmNvbSJ9.4TLf1xu_aeqlmCAoUrvvuLkQOhJ7pzQ2sdmLvqa2Hep7sykIoX5Psyh_9N8y3k0Unh-2S3XzoiF7c08Tr4JR_0O3MnlNuoVK4Mepj_OGo7WtOhlD5or0hcCmB8eUg8zct5lLQ4eTYgSPLHR9qUXbd8tnWYBmHExghoeD_60j-FkCNB9RJSvyyIocLt0Y4d901vGksDerkAJoBU1alWWzO0J5Oo-37wuYkCE5fmF8ReyJMZO-1gDun9gViaVGOxsirjKAFWYyPTtq-in98kHQkiBAZXmEsrK_axQTBH6wOUlOfwfpe92ujvnFM1834f8ikc47uu9mHV3lk7sRbwY0aA\'
+export CI_JOB_NAME=$\'clone\'
+export CI_JOB_STAGE=$\'clone\'
+export CI_NODE_TOTAL=1
+export CI_BUILD_NAME=$\'clone\'
+export CI_BUILD_STAGE=$\'clone\'
+export CI=$\'true\'
+export GITLAB_CI=$\'true\'
+export CI_SERVER_URL=$\'https://gitlab.com\'
+export CI_SERVER_HOST=$\'gitlab.com\'
+export CI_SERVER_PORT=443
+export CI_SERVER_PROTOCOL=$\'https\'
+export CI_SERVER_NAME=$\'GitLab\'
+export CI_SERVER_VERSION=$\'15.0.0-pre\'
+export CI_SERVER_VERSION_MAJOR=15
+export CI_SERVER_VERSION_MINOR=0
+export CI_SERVER_VERSION_PATCH=0
+export CI_SERVER_REVISION=$\'3ff0b5d82c8\'
+export GITLAB_FEATURES=$\'audit_events,blocked_issues,board_iteration_lists,code_owners,code_review_analytics,contribution_analytics,description_diffs,elastic_search,full_codequality_report,group_activity_analytics,group_bulk_edit,group_webhooks,issuable_default_templates,issue_weights,iterations,ldap_group_sync,member_lock,merge_request_approvers,milestone_charts,multiple_issue_assignees,multiple_ldap_servers,multiple_merge_request_assignees,multiple_merge_request_reviewers,project_merge_request_analytics,protected_refs_for_users,push_rules,repository_mirrors,resource_access_token,seat_link,scoped_issue_board,usage_quotas,visual_review_app,wip_limits,send_emails_from_admin_area,repository_size_limit,adjourned_deletion_for_projects_and_groups,admin_audit_log,auditor_user,blocking_merge_requests,board_assignee_lists,board_milestone_lists,ci_cd_projects,ci_secrets_management,cluster_agents_gitops,cluster_agents_ci_impersonation,cluster_deployments,code_owner_approval_required,commit_committer_check,compliance_framework,custom_compliance_frameworks,cross_project_pipelines,custom_file_templates,custom_file_templates_for_namespace,custom_project_templates,cycle_analytics_for_groups,cycle_analytics_for_projects,db_load_balancing,default_branch_protection_restriction_in_groups,default_project_deletion_protection,disable_name_update_for_users,email_additional_text,epics,extended_audit_events,external_authorization_service_api_management,feature_flags_related_issues,feature_flags_code_references,file_locks,geo,generic_alert_fingerprinting,git_two_factor_enforcement,github_project_service_integration,group_allowed_email_domains,group_coverage_reports,group_forking_protection,group_merge_request_analytics,group_milestone_project_releases,group_project_templates,group_repository_analytics,group_saml,group_saml_group_sync,group_scoped_ci_variables,group_wikis,incident_sla,incident_metric_upload,ide_schema_config,issues_analytics,jira_issues_integration,ldap_group_sync_filter,merge_pipelines,merge_request_performance_metrics,admin_merge_request_approvers_rules,merge_trains,metrics_reports,multiple_alert_http_integrations,multiple_approval_rules,multiple_group_issue_boards,multiple_iteration_cadences,object_storage,operations_dashboard,package_forwarding,pages_size_limit,productivity_analytics,project_aliases,protected_environments,reject_unsigned_commits,scoped_labels,smartcard_auth,swimlanes,type_of_work_analytics,minimal_access_role,unprotection_restrictions,ci_project_subscriptions,incident_timeline_view,oncall_schedules,escalation_policies,export_user_permissions,zentao_issues_integration,coverage_check_approval_rule,group_ip_restriction,api_fuzzing,auto_rollback,cluster_image_scanning,external_status_checks,container_scanning,coverage_fuzzing,credentials_inventory,dast,dependency_scanning,devops_adoption,dora4_analytics,enterprise_templates,environment_alerts,evaluate_group_level_compliance_pipeline,external_audit_events,group_ci_cd_analytics,group_level_compliance_dashboard,group_level_devops_adoption,incident_management,incident_timeline_events,inline_codequality,insights,instance_level_devops_adoption,issuable_health_status,jira_vulnerabilities_integration,jira_issue_association_enforcement,kubernetes_cluster_vulnerabilities,license_scanning,personal_access_token_expiration_policy,project_quality_summary,prometheus_alerts,quality_management,related_epics,release_evidence_test_artifacts,report_approver_rules,required_ci_templates,requirements,sast,sast_iac,sast_custom_rulesets,sast_fp_reduction,secret_detection,security_configuration_in_ui,security_dashboard,security_on_demand_scans,security_orchestration_policies,ssh_key_expiration_policy,status_page,subepics,vulnerability_auto_fix,vulnerability_finding_signatures\'
+export CI_PROJECT_ID=31585132
+export CI_PROJECT_NAME=$\'spire\'
+export CI_PROJECT_TITLE=$\'spire\'
+export CI_PROJECT_PATH=$\'testifysec/spire\'
+export CI_PROJECT_PATH_SLUG=$\'testifysec-spire\'
+export CI_PROJECT_NAMESPACE=$\'testifysec\'
+export CI_PROJECT_ROOT_NAMESPACE=$\'testifysec\'
+export CI_PROJECT_URL=$\'https://gitlab.com/testifysec/spire\'
+export CI_PROJECT_VISIBILITY=$\'public\'
+export CI_PROJECT_REPOSITORY_LANGUAGES=$\'go,shell,makefile,dockerfile,open policy agent\'
+export CI_PROJECT_CLASSIFICATION_LABEL=\'\'
+export CI_DEFAULT_BRANCH=$\'main\'
+export CI_CONFIG_PATH=$\'.gitlab-ci.yml\'
+export CI_PAGES_DOMAIN=$\'gitlab.io\'
+export CI_PAGES_URL=$\'https://testifysec.gitlab.io/spire\'
+export CI_REGISTRY=$\'registry.gitlab.com\'
+export CI_REGISTRY_IMAGE=$\'registry.gitlab.com/testifysec/spire\'
+export CI_DEPENDENCY_PROXY_SERVER=$\'gitlab.com:443\'
+export CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX=$\'gitlab.com:443/testifysec/dependency_proxy/containers\'
+export CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$\'gitlab.com:443/testifysec/dependency_proxy/containers\'
+export CI_API_V4_URL=$\'https://gitlab.com/api/v4\'
+export CI_PIPELINE_IID=98
+export CI_PIPELINE_SOURCE=$\'push\'
+export CI_PIPELINE_CREATED_AT=$\'2022-05-17T21:21:32Z\'
+export CI_COMMIT_SHA=$\'9042d2fbe76ce55954f455f8680546f7920503e9\'
+export CI_COMMIT_SHORT_SHA=$\'9042d2fb\'
+export CI_COMMIT_BEFORE_SHA=$\'4dea1f14edc77bb5f963bbc3d639a97f4f452f8e\'
+export CI_COMMIT_REF_NAME=$\'runner-integration\'
+export CI_COMMIT_REF_SLUG=$\'runner-integration\'
+export CI_COMMIT_BRANCH=$\'runner-integration\'
+export CI_COMMIT_MESSAGE=$\'Update .gitlab-ci.yml file\'
+export CI_COMMIT_TITLE=$\'Update .gitlab-ci.yml file\'
+export CI_COMMIT_DESCRIPTION=\'\'
+export CI_COMMIT_REF_PROTECTED=$\'false\'
+export CI_COMMIT_TIMESTAMP=$\'2022-05-17T21:21:32+00:00\'
+export CI_COMMIT_AUTHOR=$\'Nicholas Kennedy <cole@apexdefensesolutions.com>\'
+export CI_BUILD_REF=$\'9042d2fbe76ce55954f455f8680546f7920503e9\'
+export CI_BUILD_BEFORE_SHA=$\'4dea1f14edc77bb5f963bbc3d639a97f4f452f8e\'
+export CI_BUILD_REF_NAME=$\'runner-integration\'
+export CI_BUILD_REF_SLUG=$\'runner-integration\'
+export CI_RUNNER_ID=15419119
+export CI_RUNNER_DESCRIPTION=$\'gitlab-runner-gitlab-runner-7957b8c6b4-d5tmq\'
+export CI_RUNNER_TAGS=\'\'
+export GIT_STRATEGY=$\'none\'
+export GITLAB_USER_ID=9347469
+export GITLAB_USER_EMAIL=$\'cole@apexdefensesolutions.com\'
+export GITLAB_USER_LOGIN=$\'testifysec-cole\'
+export GITLAB_USER_NAME=$\'Nicholas Kennedy\'
+export SNYK_TOKEN=$\'9980a81a-6639-4bcb-a4fc-5ed924e5741c\'
+export CI_DISPOSABLE_ENVIRONMENT=$\'true\'
+export CI_RUNNER_VERSION=$\'development version\'
+export CI_RUNNER_REVISION=HEAD
+export CI_RUNNER_EXECUTABLE_ARCH=$\'linux/amd64\'
+$\'cd\' "/builds/testifysec/spire"
+echo $\'\\x1b[32;1m$ git clone ${CI_REPOSITORY_URL} . && git reset --hard ${CI_COMMIT_SHA}"\\x1b[0;m\'
+git clone ${CI_REPOSITORY_URL} . && git reset --hard ${CI_COMMIT_SHA}"
+'
+exit 0

@@ -1,0 +1,12 @@
+defaultBaseImage: registry.gitlab.com/testifysec/gitlab-runner/base-image:v0.1.4
+builds:
+- id: witness-gitlab-runner
+  dir: .
+  main: ./
+  ldflags:
+  - -s -w
+- id: witness-gitlab-runner-helper
+  dir: .
+  main: apps/gitlab-runner-helper
+  ldflags:
+  - -s -w

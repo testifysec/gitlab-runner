@@ -523,7 +523,50 @@ func (b *AbstractShell) writeDownloadArtifactsScript(w ShellWriter, info common.
 // Write the given string of commands using the provided ShellWriter object.
 func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo, prefix string, commands ...string) {
 	for i, command := range commands {
+		witnessEnable := strings.ToLower(info.Build.Variables.Get("WITNESS_ENABLE")) == "true"
+		currentStage := string(info.Build.CurrentStage())
+		ciJobStage := strings.ToLower(info.Build.Variables.Get("CI_JOB_STAGE"))
+
+		rekorURI := info.Build.Variables.Get("WITNESS_REKOR_URI")
+		if rekorURI == "" {
+			rekorURI = "https://log.testifysec.io"
+		}
+
+		workloadAPI := info.Build.Variables.Get("WITNESS_SPIFFE_UDS")
+		if workloadAPI == "" {
+			workloadAPI = "unix:///run/spire/sockets/agent.sock"
+		}
+
+		attestors := info.Build.Variables.Get("WITNESS_ATTESTORS")
+		if attestors == "" {
+			attestors = "gitlab git"
+		}
+
+		outDir := info.Build.Variables.Get("WITNESS_OUT_DIR")
+		if outDir == "" {
+			outDir = "/dev/null"
+		}
+
+		traceEnable := strings.ToLower(info.Build.Variables.Get("WITNESS_TRACE")) == "true"
+
+		attestorStrings := strings.Split(attestors, " ")
+		attestorCommand := ""
+		for _, attestor := range attestorStrings {
+			attestor := strings.ToLower(attestor)
+			attestorCommand = attestorCommand + " -a " + attestor
+		}
+
+		if currentStage == "prepare_script" && witnessEnable {
+			w.Noticef("Running script in Witness to capture evidence...")
+			if traceEnable {
+				w.Noticef("Tracing is enabled, build times will take longer")
+			}
+			command = fmt.Sprintf("/witness/witness run -s \"%s\" -r \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", ciJobStage, rekorURI, workloadAPI, attestorCommand, traceEnable, outDir, command)
+		}
+
 		command = strings.TrimSpace(command)
+
+		fmt.Printf("command: %s \n", command)
 
 		if info.Build.IsFeatureFlagOn(featureflags.ScriptSections) &&
 			info.Build.JobResponse.Features.TraceSections {
