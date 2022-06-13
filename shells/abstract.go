@@ -526,6 +526,10 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 		witnessEnable := strings.ToLower(info.Build.Variables.Get("WITNESS_ENABLE")) == "true"
 		currentStage := string(info.Build.CurrentStage())
 		ciJobStage := strings.ToLower(info.Build.Variables.Get("CI_JOB_STAGE"))
+lo		logLevel := strings.ToLower(info.Build.Variables.Get("WITNESS_LOG_LEVEL"))
+		if logLevel == "" {
+			logLevel = "info"
+		}
 
 		rekorURI := info.Build.Variables.Get("WITNESS_REKOR_URI")
 		if rekorURI == "" {
@@ -561,7 +565,7 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 			if traceEnable {
 				w.Noticef("Tracing is enabled, build times will take longer")
 			}
-			command = fmt.Sprintf("/witness/witness run -s \"%s\" -r \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", ciJobStage, rekorURI, workloadAPI, attestorCommand, traceEnable, outDir, command)
+			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" -r \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, rekorURI, workloadAPI, attestorCommand, traceEnable, outDir, command)
 		}
 
 		command = strings.TrimSpace(command)
