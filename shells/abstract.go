@@ -526,7 +526,7 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 		witnessEnable := strings.ToLower(info.Build.Variables.Get("WITNESS_ENABLE")) == "true"
 		currentStage := string(info.Build.CurrentStage())
 		ciJobStage := strings.ToLower(info.Build.Variables.Get("CI_JOB_STAGE"))
-lo		logLevel := strings.ToLower(info.Build.Variables.Get("WITNESS_LOG_LEVEL"))
+		logLevel := strings.ToLower(info.Build.Variables.Get("WITNESS_LOG_LEVEL"))
 		if logLevel == "" {
 			logLevel = "info"
 		}
