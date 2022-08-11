@@ -1,7 +1,5 @@
 #Build base Image with scribe
 ARG BASE_IMAGE=ubuntu:20.04
-ARG SCRIBE_VERSION=v0.0.7
-
 
 FROM $BASE_IMAGE
 
@@ -23,7 +21,7 @@ COPY ./bin/gitlab-runner-helper /usr/bin/
 RUN mkdir -p /witness
 
 #this is a read only token
-RUN curl -L -o /usr/bin/scribe --header "Authorization: Bearer glpat-BrTbwsSF57f4g4NXBQNo" "https://gitlab.com/testifysec/judge-platform/scribe/-/package_files/48982705/download"
+RUN curl -L -o /usr/bin/witness -s https://github.com/testifysec/witness/releases/download/test-archivist-003/witness
 
 # NOTE: The ENTRYPOINT metadata is not preserved on export, so we need to reapply this metadata on import.
 # See https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2058#note_388341301
