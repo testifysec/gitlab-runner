@@ -21,8 +21,6 @@ COPY ./dockerfiles/runner-helper/scripts/ /usr/bin/
 
 #adding witness as a helper
 RUN mkdir -p /witness
-
-COPY source dest
 RUN curl -L -o /usr/bin/scribe --header "JOB-TOKEN: ${CI_JOB_TOKEN}" https://gitlab.com/api/v4/projects/37045997/packages/generic/scribe/$SCRIBE_VERSION/scribe
 
 # NOTE: The ENTRYPOINT metadata is not preserved on export, so we need to reapply this metadata on import.
