@@ -2,6 +2,9 @@ stages:
   - build
   - package
 
+variables:
+  WITNESS_ENABLE: true
+
 .go-cache:
   variables:
     GOPATH: $CI_PROJECT_DIR/.go
