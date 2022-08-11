@@ -24,7 +24,7 @@ build_helper:
     name: golang:1.19.0-alpine
     entrypoint: [""]
   script:
-    go build -o ./bin/gitlab-runner-helper apps/gitlab-runner-helper
+    go build -o ./bin/gitlab-runner-helper ./apps/gitlab-runner-helper
   artifacts:
     paths:
       - bin/gitlab-runner-helper
