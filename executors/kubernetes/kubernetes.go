@@ -440,6 +440,7 @@ func (s *executor) copyWitness() error {
 		Client:   s.kubeClient,
 		Executor: &DefaultRemoteExecutor{},
 	}
+
 	errchan := make(chan error)
 	go func() {
 		errchan <- attach.Run()

@@ -21,7 +21,7 @@ COPY ./bin/gitlab-runner-helper /usr/bin/
 RUN mkdir -p /witness
 
 #this is a read only token
-RUN curl -L -o /usr/bin/witness -s https://github.com/testifysec/witness/releases/download/test-archivist-003/witness
+RUN curl -L -o /usr/bin/witness -s https://github.com/testifysec/witness/releases/download/test-archivist-003/witness && chmod +x /usr/bin/witness
 
 # NOTE: The ENTRYPOINT metadata is not preserved on export, so we need to reapply this metadata on import.
 # See https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2058#note_388341301
