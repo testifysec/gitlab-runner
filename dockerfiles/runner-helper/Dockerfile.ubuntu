@@ -13,10 +13,10 @@ RUN apt-get update && apt-get install -y curl bash ca-certificates dumb-init git
 
 RUN git lfs install --skip-repo
 
-COPY ./helpers/entrypoint /
+COPY ./dockerfiles/runner-helper/helpers/entrypoint /
 RUN chmod +x /entrypoint
 
-COPY ./scripts/ ./binaries/gitlab-runner-helper /usr/bin/
+COPY ./dockerfiles/runner-helper/scripts/ ./binaries/gitlab-runner-helper /usr/bin/
 
 #adding witness as a helper
 RUN mkdir -p /witness
