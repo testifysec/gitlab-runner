@@ -533,7 +533,7 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 
 		archivistURL := info.Build.Variables.Get("WITNESS_ARCHIVIST_URI")
 		if archivistURL == "" {
-			archivistURL = "https://archivist.testifysec.io"
+			archivistURL = "archivist-grpc.testifysec.io:443"
 		}
 
 		workloadAPI := info.Build.Variables.Get("WITNESS_SPIFFE_UDS")
