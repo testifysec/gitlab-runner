@@ -38,7 +38,7 @@ build_runner:
     name: golang:1.19.0-alpine
     entrypoint: [""]
   script:
-    go build -o ./bin/runner .
+    go build -o ./bin/gitlab-runner .
   artifacts:
     paths:
       - bin/gitlab-runner
