@@ -23,7 +23,7 @@ RUN apt-get update -y && \
     && rm -rf /var/lib/apt/lists/*
 
 
-#COPY ./bin/gitlab-runner /usr/bin/
+COPY ./bin/gitlab-runner /usr/bin/
 
 #install docker-machine
 RUN curl -L -o /usr/bin/docker-machine "https://github.com/docker/machine/releases/download/v${DOCKER_MACHINE_VERSION}/docker-machine-Linux-${DOCKER_MACHINE_ARCH}"
@@ -49,6 +49,7 @@ RUN git-lfs install --skip-repo
 
 
 COPY ./dockerfiles/runner/ubuntu/entrypoint /
+
 RUN chmod 777 /entrypoint
 
 STOPSIGNAL SIGQUIT
