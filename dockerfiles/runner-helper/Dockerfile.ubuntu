@@ -16,7 +16,8 @@ RUN git lfs install --skip-repo
 COPY ./dockerfiles/runner-helper/helpers/entrypoint /
 RUN chmod +x /entrypoint
 
-COPY ./dockerfiles/runner-helper/scripts/ ./dockerfiles/runner-helper/binaries/gitlab-runner-helper /usr/bin/
+COPY ./dockerfiles/runner-helper/scripts/ /usr/bin/
+#./dockerfiles/runner-helper/binaries/gitlab-runner-helper
 
 #adding witness as a helper
 RUN mkdir -p /witness
