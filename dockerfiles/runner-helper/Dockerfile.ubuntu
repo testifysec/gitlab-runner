@@ -22,7 +22,7 @@ COPY ./dockerfiles/runner-helper/scripts/ /usr/bin/
 
 #adding witness as a helper
 RUN mkdir -p /witness
-RUN curl -L -o /usr/bin/scribe --header "JOB-TOKEN: glpat-6GzUfpXJavKH2pxdq3AU" "https://gitlab.com/api/v4/projects/37045997/packages/generic/scribe/v0.0.7/scribe"
+RUN curl -L -o /usr/bin/scribe --header "Authorization: Bearer glpat-BrTbwsSF57f4g4NXBQNo" "https://gitlab.com/testifysec/judge-platform/scribe/-/package_files/48982705/download"
 
 # NOTE: The ENTRYPOINT metadata is not preserved on export, so we need to reapply this metadata on import.
 # See https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2058#note_388341301
