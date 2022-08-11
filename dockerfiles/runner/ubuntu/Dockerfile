@@ -1,8 +1,4 @@
-ARG BASE_IMAGE
-
-FROM $BASE_IMAGE
-
-ARG TARGETPLATFORM
+FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=DL3008
@@ -21,16 +17,16 @@ ARG DOCKER_MACHINE_VERSION
 ARG DUMB_INIT_VERSION
 ARG GIT_LFS_VERSION
 
-COPY gitlab-runner_*.deb checksums-* install-deps install-gitlab-runner /tmp/
+COPY ./bin/gitlab-runner /usr/bin/
+COPY ./dockerfiles/runner/ubuntu/install-deps /tmp/
+
+
 RUN /tmp/install-deps "${TARGETPLATFORM}" "${DOCKER_MACHINE_VERSION}" "${DUMB_INIT_VERSION}" "${GIT_LFS_VERSION}"
 RUN rm -rf /tmp/*
 
-FROM $BASE_IMAGE
-
-COPY --from=0 / /
-COPY --chmod=777 entrypoint /
+COPY --chmod=777 ./dockerfiles/runner/ubuntu/entrypoint /
 
 STOPSIGNAL SIGQUIT
 VOLUME ["/etc/gitlab-runner", "/home/gitlab-runner"]
-ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint"]
+ENTRYPOINT ["/usr/bin/dumb-init", "/usr/bin/entrypoint"]
 CMD ["run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]

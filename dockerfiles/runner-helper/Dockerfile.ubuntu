@@ -17,7 +17,7 @@ COPY ./dockerfiles/runner-helper/helpers/entrypoint /
 RUN chmod +x /entrypoint
 
 COPY ./dockerfiles/runner-helper/scripts/ /usr/bin/
-#./dockerfiles/runner-helper/binaries/gitlab-runner-helper
+COPY ./bin/gitlab-runner-helper /usr/bin/
 
 #adding witness as a helper
 RUN mkdir -p /witness
