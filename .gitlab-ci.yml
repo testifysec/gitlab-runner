@@ -17,7 +17,7 @@ runner_helper:
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/dockerfiles/runner-helper/Dockerfile.ubuntu"
-      --destination "${CI_REGISTRY_IMAGE}/helper-base:${SCRIBE_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/helper-base:latest"
 
 # build-and-push-runner:
 #   variables:
