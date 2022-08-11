@@ -1,6 +1,6 @@
 defaultBaseImage: registry.gitlab.com/testifysec/gitlab-runner/base-image:v0.1.4
 baseImageOverrides:
-   witness-gitlab-runner-helper: registry.gitlab.com/testifysec/gitlab-runner/helper-base:latest
+   gitlab.com/gitlab-org/gitlab-runner/apps/gitlab-runner-helper: registry.gitlab.com/testifysec/gitlab-runner/helper-base:latest
 builds:
 - id: witness-gitlab-runner
   dir: .
