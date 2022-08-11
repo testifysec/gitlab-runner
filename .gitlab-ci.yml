@@ -19,16 +19,16 @@ runner_helper:
       --dockerfile "${CI_PROJECT_DIR}/dockerfiles/runner-helper/Dockerfile.ubuntu"
       --destination "${CI_REGISTRY_IMAGE}/helper-base:latest"
 
-# build-and-push-runner:
-#   variables:
-#     KO_DOCKER_REPO: ${CI_REGISTRY}/${CI_REGISTRY_IMAGE}
-#   stage: build
-#   image:
-#     name: registry.gitlab.com/testifysec/docker-images/ko:0.11.2
-#     entrypoint: [""]
-#   script:
-#     - ko auth login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-#     - ko publish --bare --tags=${CI_COMMIT_SHORT_SHA} ./cmd/archivist
+build-and-push-runner:
+  stage: build
+  variables:
+    KO_DOCKER_REPO: ${CI_REGISTRY}/${CI_REGISTRY_IMAGE}
+  image:
+    name: registry.gitlab.com/testifysec/docker-images/ko:0.11.2
+    entrypoint: [""]
+  script:
+    - ko auth login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - ko publish --bare --tags=${CI_COMMIT_SHORT_SHA} ./apps/gitlab-runner-helper
   
 # build-and-push-client:
 #   variables:
