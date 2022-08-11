@@ -1,4 +1,4 @@
-defaultBaseImage: registry.gitlab.com/testifysec/gitlab-runner/base-image:v0.1.4
+defaultBaseImage: registry.gitlab.com/testifysec/gitlab-runner/base-image:latest
 builds:
 - id: witness-gitlab-runner
   dir: .

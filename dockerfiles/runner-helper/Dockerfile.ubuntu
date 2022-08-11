@@ -1,5 +1,7 @@
+#Build base Image with scribe
 ARG BASE_IMAGE=ubuntu:20.04
-ARG WITNESS_VER=0.1.8
+ARG SCRIBE_VERSION=v0.0.7
+ARG CI_JOB_TOKEN=""
 
 FROM $BASE_IMAGE
 
@@ -16,13 +18,11 @@ RUN chmod +x /entrypoint
 
 COPY ./scripts/ ./binaries/gitlab-runner-helper /usr/bin/
 
-
 #adding witness as a helper
 RUN mkdir -p /witness
-RUN curl -L https://github.com/testifysec/witness/releases/download/v0.1.8/witness_0.1.8_linux_amd64.tar.gz -o /tmp/witness.tar.gz
-RUN tar -xzf /tmp/witness.tar.gz -C /usr/bin/
-RUN rm /tmp/witness.tar.gz
 
+COPY source dest
+RUN curl -L -o /usr/bin/scribe --header "JOB-TOKEN: ${CI_JOB_TOKEN}" https://gitlab.com/api/v4/projects/37045997/packages/generic/scribe/$SCRIBE_VERSION/scribe
 
 # NOTE: The ENTRYPOINT metadata is not preserved on export, so we need to reapply this metadata on import.
 # See https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2058#note_388341301
