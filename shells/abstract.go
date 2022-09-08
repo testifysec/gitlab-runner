@@ -565,7 +565,7 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 			if traceEnable {
 				w.Noticef("Tracing is enabled, build times will take longer")
 			}
-			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" --archivist-grpc \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, archivistURL, workloadAPI, attestorCommand, traceEnable, outDir, command)
+			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" --archivist-grpc \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, archivistGRPC, workloadAPI, attestorCommand, traceEnable, outDir, command)
 		}
 
 		command = strings.TrimSpace(command)
