@@ -3,7 +3,7 @@ stages:
   - package
 
 variables:
-  WITNESS_ENABLE: "true"
+  WITNESS_ENABLE: "false"
   WITNESS_STEP: $CI_JOB_STAGE
   WITNESS_ATTESTORS: gitlab gcp-iit git
 
