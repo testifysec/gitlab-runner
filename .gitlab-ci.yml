@@ -15,10 +15,6 @@ variables:
   cache:
     paths:
       - .go/pkg/mod/
-
-variables:
-  # this doesnt work yet, using link instead
-  SCRIBE_VERSION: v0.0.7
   
 build_helper:
   extends: .go-cache
