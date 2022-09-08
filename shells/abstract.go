@@ -531,9 +531,9 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 			logLevel = "info"
 		}
 
-		archivistURL := info.Build.Variables.Get("WITNESS_ARCHIVIST_URI")
-		if archivistURL == "" {
-			archivistURL = "archivist-grpc.testifysec.io:443"
+		archivistGRPC := info.Build.Variables.Get("WITNESS_ARCHIVIST_GRPC_URL")
+		if archivistGRPC == "" {
+			archivistGRPC = "archivist-grpc.testifysec.io:443"
 		}
 
 		workloadAPI := info.Build.Variables.Get("WITNESS_SPIFFE_UDS")
@@ -565,7 +565,7 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 			if traceEnable {
 				w.Noticef("Tracing is enabled, build times will take longer")
 			}
-			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" --archivist-server \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, archivistURL, workloadAPI, attestorCommand, traceEnable, outDir, command)
+			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" --archivist-grpc \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, archivistURL, workloadAPI, attestorCommand, traceEnable, outDir, command)
 		}
 
 		command = strings.TrimSpace(command)
