@@ -20,8 +20,9 @@ COPY ./bin/gitlab-runner-helper /usr/bin/
 #adding witness as a helper
 RUN mkdir -p /witness
 
-#this is a read only token
-RUN curl -L -o /usr/bin/witness -s https://github.com/testifysec/witness/releases/download/v0.1.11-test-archivist/witness && chmod +x /usr/bin/witness
+RUN curl -L -o /usr/bin/witness.tar.gz -s https://github.com/testifysec/witness/releases/download/v0.1.12-rc3/witness_0.1.12-rc3_linux_amd64.tar.gz \
+  && tar -xvf /usr/bin/witness.tar.gz -C /witness \
+  && rm /usr/bin/witness.tar.gz
 
 # NOTE: The ENTRYPOINT metadata is not preserved on export, so we need to reapply this metadata on import.
 # See https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2058#note_388341301

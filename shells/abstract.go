@@ -531,9 +531,11 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 			logLevel = "info"
 		}
 
-		archivistGRPC := info.Build.Variables.Get("WITNESS_ARCHIVIST_GRPC_URL")
-		if archivistGRPC == "" {
-			archivistGRPC = "archivist-grpc.testifysec.io:443"
+		enableArchivist := strings.ToLower(info.Build.Variables.Get("ARCHIVIST_ENABLE")) == "true"
+
+		archivistURL := info.Build.Variables.Get("ARCHIVIST_URL")
+		if archivistURL == "" {
+			archivistURL = "https://archivist.testifysec.io"
 		}
 
 		workloadAPI := info.Build.Variables.Get("WITNESS_SPIFFE_UDS")
@@ -551,6 +553,11 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 			outDir = "/dev/null"
 		}
 
+		tsaServers := info.Build.Variables.Get("WITNESS_TSA_SERVERS")
+		if tsaServers == "" {
+			tsaServers = "https://freetsa.org/tsr"
+		}
+
 		traceEnable := strings.ToLower(info.Build.Variables.Get("WITNESS_TRACE")) == "true"
 
 		attestorStrings := strings.Split(attestors, " ")
@@ -560,12 +567,19 @@ func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo
 			attestorCommand = attestorCommand + " -a " + attestor
 		}
 
+		tsaServersStrings := strings.Split(tsaServers, " ")
+		tsaServersCommand := ""
+		for _, tsaServer := range tsaServersStrings {
+			tsaServer := strings.ToLower(tsaServer)
+			tsaServersCommand = tsaServersCommand + " --timestamp-servers " + tsaServer
+		}
+
 		if currentStage == "prepare_script" && witnessEnable {
 			w.Noticef("Running script in Witness to capture evidence...")
 			if traceEnable {
 				w.Noticef("Tracing is enabled, build times will take longer")
 			}
-			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" --archivist-grpc \"%s\" --spiffe-socket=\"%s\" %s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, archivistGRPC, workloadAPI, attestorCommand, traceEnable, outDir, command)
+			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" --enable-archivist=%t --spiffe-socket=\"%s\" %s %s ----archivist-server=%s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, enableArchivist, workloadAPI, attestorCommand, tsaServersCommand, archivistURL, traceEnable, outDir, command)
 		}
 
 		command = strings.TrimSpace(command)
