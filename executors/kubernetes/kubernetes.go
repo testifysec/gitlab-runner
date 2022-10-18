@@ -428,7 +428,7 @@ func (s *executor) ensurePodsConfigured(ctx context.Context) error {
 }
 
 func (s *executor) copyWitness() error {
-	cmd := []string{"/bin/sh", "-c", "\"", "cp", "/usr/bin/witness", "/witness/witness", "\""}
+	cmd := []string{"/bin/sh", "-c", "\"", "cp", "/witness/witness", "/witness/witness", "\""}
 
 	attach := AttachOptions{
 		PodName:       s.pod.Name,
