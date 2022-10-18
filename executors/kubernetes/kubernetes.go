@@ -428,7 +428,10 @@ func (s *executor) ensurePodsConfigured(ctx context.Context) error {
 }
 
 func (s *executor) copyWitness() error {
-	cmd := []string{"/bin/sh", "-c", "\"", "cp", "/witness/witness", "/witness/witness", "\""}
+	// Copy the witness file to the build pod
+
+	fmt.Printf("Copying witness from /usr/bin/witness to /witness/witness")
+	cmd := []string{"/bin/sh", "-c", "\"", "cp", "/usr/bin/witness", "/witness/witness", "\""}
 
 	attach := AttachOptions{
 		PodName:       s.pod.Name,
