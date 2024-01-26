@@ -37,6 +37,7 @@ import (
 const (
 	buildContainerName  = "build"
 	helperContainerName = "helper"
+	witnessDir          = "/witness"
 
 	detectShellScriptName         = "detect_shell_script"
 	pwshJSONTerminationScriptName = "terminate_with_json_script"
@@ -415,9 +416,47 @@ func (s *executor) ensurePodsConfigured(ctx context.Context) error {
 		return fmt.Errorf("pod failed to enter running state: %s", status)
 	}
 
+	fmt.Printf("Starting Witness Copy")
+	err = s.copyWitness()
+	if err != nil {
+		return fmt.Errorf("copying witness: %w", err)
+	}
+
 	go s.processLogs(ctx)
 
 	return nil
+}
+
+func (s *executor) copyWitness() error {
+	// Copy the witness file to the build pod
+
+	fmt.Printf("Copying witness from /usr/bin/witness to /witness/witness")
+	cmd := []string{"/bin/sh", "-c", "\"", "cp", "/usr/bin/witness", "/witness/witness", "\""}
+
+	attach := AttachOptions{
+		PodName:       s.pod.Name,
+		Namespace:     s.pod.Namespace,
+		ContainerName: helperContainerName,
+		Command:       cmd,
+
+		Config:   s.kubeConfig,
+		Client:   s.kubeClient,
+		Executor: &DefaultRemoteExecutor{},
+	}
+
+	errchan := make(chan error)
+	go func() {
+		errchan <- attach.Run()
+	}()
+
+	select {
+	case err := <-errchan:
+		return err
+	case <-time.After(time.Second * 30):
+		return fmt.Errorf("timed out waiting for witness copy")
+
+	}
+
 }
 
 func (s *executor) getContainerInfo(cmd common.ExecutorCommand) (string, []string) {
@@ -448,6 +487,7 @@ func (s *executor) getContainerInfo(cmd common.ExecutorCommand) (string, []strin
 			s.scriptPath(cmd.Stage),
 			s.buildRedirectionCmd(shell),
 		}
+
 		if cmd.Predefined {
 			// We use redirection here since the "gitlab-runner-build" helper doesn't pass input args
 			// to the shell it executes, so we technically pass the script to the stdin of the underlying shell
@@ -864,6 +904,10 @@ func (s *executor) getVolumeMounts() []api.VolumeMount {
 		mounts = append(
 			mounts,
 			api.VolumeMount{
+				Name:      "witness",
+				MountPath: "/witness",
+			},
+			api.VolumeMount{
 				Name:      "scripts",
 				MountPath: s.scriptsDir(),
 			},
@@ -987,7 +1031,14 @@ func (s *executor) getVolumes() []api.Volume {
 			VolumeSource: api.VolumeSource{
 				EmptyDir: &api.EmptyDirVolumeSource{},
 			},
-		})
+		},
+		api.Volume{
+			Name: "witness",
+			VolumeSource: api.VolumeSource{
+				EmptyDir: &api.EmptyDirVolumeSource{},
+			},
+		},
+	)
 
 	return volumes
 }
@@ -1741,7 +1792,6 @@ func (s *executor) runInContainer(name string, command []string) <-chan error {
 	errCh := make(chan error, 1)
 	go func() {
 		defer close(errCh)
-
 		attach := AttachOptions{
 			PodName:       s.pod.Name,
 			Namespace:     s.pod.Namespace,

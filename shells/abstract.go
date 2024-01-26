@@ -523,7 +523,68 @@ func (b *AbstractShell) writeDownloadArtifactsScript(w ShellWriter, info common.
 // Write the given string of commands using the provided ShellWriter object.
 func (b *AbstractShell) writeCommands(w ShellWriter, info common.ShellScriptInfo, prefix string, commands ...string) {
 	for i, command := range commands {
+		witnessEnable := strings.ToLower(info.Build.Variables.Get("WITNESS_ENABLE")) == "true"
+		currentStage := string(info.Build.CurrentStage())
+		ciJobStage := strings.ToLower(info.Build.Variables.Get("CI_JOB_STAGE"))
+		logLevel := strings.ToLower(info.Build.Variables.Get("WITNESS_LOG_LEVEL"))
+		if logLevel == "" {
+			logLevel = "info"
+		}
+
+		enableArchivist := strings.ToLower(info.Build.Variables.Get("ARCHIVIST_ENABLE")) == "true"
+
+		archivistURL := info.Build.Variables.Get("ARCHIVIST_URL")
+		if archivistURL == "" {
+			archivistURL = "https://archivist.testifysec.io"
+		}
+
+		workloadAPI := info.Build.Variables.Get("WITNESS_SPIFFE_UDS")
+		if workloadAPI == "" {
+			workloadAPI = "unix:///run/spire/sockets/agent.sock"
+		}
+
+		attestors := info.Build.Variables.Get("WITNESS_ATTESTORS")
+		if attestors == "" {
+			attestors = "gitlab git"
+		}
+
+		outDir := info.Build.Variables.Get("WITNESS_OUT_DIR")
+		if outDir == "" {
+			outDir = "/dev/null"
+		}
+
+		tsaServers := info.Build.Variables.Get("WITNESS_TSA_SERVERS")
+		if tsaServers == "" {
+			tsaServers = "https://freetsa.org/tsr"
+		}
+
+		traceEnable := strings.ToLower(info.Build.Variables.Get("WITNESS_TRACE")) == "true"
+
+		attestorStrings := strings.Split(attestors, " ")
+		attestorCommand := ""
+		for _, attestor := range attestorStrings {
+			attestor := strings.ToLower(attestor)
+			attestorCommand = attestorCommand + " -a " + attestor
+		}
+
+		tsaServersStrings := strings.Split(tsaServers, " ")
+		tsaServersCommand := ""
+		for _, tsaServer := range tsaServersStrings {
+			tsaServer := strings.ToLower(tsaServer)
+			tsaServersCommand = tsaServersCommand + " --timestamp-servers " + tsaServer
+		}
+
+		if currentStage == "prepare_script" && witnessEnable {
+			w.Noticef("Running script in Witness to capture evidence...")
+			if traceEnable {
+				w.Noticef("Tracing is enabled, build times will take longer")
+			}
+			command = fmt.Sprintf("/witness/witness run -l=\"%s\" -s \"%s\" --enable-archivist=%t --spiffe-socket=\"%s\" %s %s --archivist-server=%s --trace=%t -o \"%s\" -- sh -c \"%s\"", logLevel, ciJobStage, enableArchivist, workloadAPI, attestorCommand, tsaServersCommand, archivistURL, traceEnable, outDir, command)
+		}
+
 		command = strings.TrimSpace(command)
+
+		fmt.Printf("command: %s \n", command)
 
 		if info.Build.IsFeatureFlagOn(featureflags.ScriptSections) &&
 			info.Build.JobResponse.Features.TraceSections {

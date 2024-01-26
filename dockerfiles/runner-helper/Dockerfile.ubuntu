@@ -1,19 +1,30 @@
-ARG BASE_IMAGE
+#Build base Image with scribe
+ARG BASE_IMAGE=ubuntu:20.04
 
 FROM $BASE_IMAGE
 
 # gitlab-runner-helper will try to resolve `sh` from the path. We ensure the PATH is populated by default, as some container runtimes do no longer set a default (e.g. containerd v1.2.8)
 ENV PATH="${PATH:-/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin}"
 
-RUN apt-get update && apt-get install -y bash ca-certificates dumb-init git git-lfs \
+RUN apt-get update && apt-get install -y curl bash ca-certificates dumb-init git git-lfs \
   && rm -rf /var/lib/apt/lists/*
 
 RUN git lfs install --skip-repo
 
-COPY ./helpers/entrypoint /
+COPY ./dockerfiles/runner-helper/helpers/entrypoint /
 RUN chmod +x /entrypoint
 
-COPY ./scripts/ ./binaries/gitlab-runner-helper /usr/bin/
+COPY ./dockerfiles/runner-helper/scripts/ /usr/bin/
+COPY ./bin/gitlab-runner-helper /usr/bin/
+
+#adding witness as a helper
+RUN mkdir -p /witness
+
+RUN curl -L -o /usr/bin/witness.tar.gz -s \
+  https://github.com/testifysec/witness/releases/download/v0.1.12-rc3/witness_0.1.12-rc3_linux_amd64.tar.gz \
+  && tar -xzf /usr/bin/witness.tar.gz -C /usr/bin/ \
+  && rm /usr/bin/witness.tar.gz \
+  && chmod +x /usr/bin/witness
 
 # NOTE: The ENTRYPOINT metadata is not preserved on export, so we need to reapply this metadata on import.
 # See https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2058#note_388341301
